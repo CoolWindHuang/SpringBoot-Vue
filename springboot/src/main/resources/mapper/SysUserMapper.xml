@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wufeng.mapper.SysUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.wufeng.pojo.SysUser">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="create_time" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="login" parameterType="com.wufeng.pojo.dto.SysUserDto" resultType="com.wufeng.pojo.SysUser">
+        SELECT * FROM sys_user WHERE username = #{username} AND password=#{password}
+    </select>
+
+    <select id="getUserList" resultType="com.wufeng.pojo.SysUser">
+        SELECT * FROM sys_user
+    </select>
+
+    <insert id="addUser" parameterType="com.wufeng.pojo.SysUser">
+        INSERT INTO sys_user
+            (username,password,nickname,email,phone,address)
+        VALUES
+            (#{username},#{password},#{nickname},#{email},#{phone},#{address})
+    </insert>
+
+    <update id="updateUser" parameterType="com.wufeng.pojo.SysUser">
+        UPDATE sys_user
+            <set>
+                <if test="username!=null">
+                    username=#{username},
+                </if>
+                <if test="password!=null">
+                    password=#{password},
+                </if>
+                <if test="nickname!=null">
+                    nickname=#{nickname},
+                </if>
+                <if test="email!=null">
+                    email=#{email},
+                </if>
+                <if test="phone!=null">
+                    phone=#{phone},
+                </if>
+                <if test="address!=null">
+                    address=#{address}
+                </if>
+            </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteByUserId" parameterType="int">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+    <select id="findPage" resultType="com.wufeng.pojo.SysUser">
+        SELECT * FROM sys_user
+        <where>
+            <if test="email!=null and email!=''">
+                email LIKE #{email}
+            </if>
+            <if test="username!=null and username!=''">
+                AND  username LIKE #{username}
+            </if>
+            <if test="address!=null and address!=''">
+                AND address LIKE #{address}
+            </if>
+        </where>
+        LIMIT #{pageIndex},#{pageSize}
+    </select>
+
+    <select id="userTotal" resultType="int">
+        SELECT count(*) FROM sys_user
+    </select>
+
+    <select id="userTotalOnCondition" resultType="int">
+        SELECT count(*) FROM sys_user
+        <where>
+            <if test="email!=null and email!=''">
+                email LIKE #{email}
+            </if>
+            <if test="username!=null and username!=''">
+                AND  username LIKE #{username}
+            </if>
+            <if test="address!=null and address!=''">
+                AND address LIKE #{address}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteUsersByIds" parameterType="java.util.List">
+        DELETE FROM sys_user
+        WHERE id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
